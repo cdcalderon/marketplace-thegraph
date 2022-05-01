@@ -6,3 +6,11 @@ type ActiveItem @entity {
   tokenId: BigInt!
   price: BigInt
 }
+
+type ItemListed @entity {
+  id: ID!
+  seller: Bytes! # address
+  nftAddress: Bytes! # address
+  tokenId: BigInt!
+  price: BigInt
+}
