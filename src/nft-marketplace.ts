@@ -32,13 +32,38 @@ export function handleItemBought(event: ItemBoughtEvent): void {
   itemBought.buyer = event.params.buyer;
   itemBought.nftAddress = event.params.nftAddress;
   itemBought.tokenId = event.params.tokenId;
+
+  // Real Address has been Bought
   activeItem!.buyer = event.params.buyer;
 
   itemBought.save();
   activeItem!.save();
 }
 
-export function handleItemCanceled(event: ItemCanceledEvent): void {}
+export function handleItemCanceled(event: ItemCanceledEvent): void {
+  let itemCanceled = ItemCanceled.load(
+    getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
+  );
+  let activeItem = ActiveItem.load(
+    getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
+  );
+  if (!itemCanceled) {
+    itemCanceled = new ItemCanceled(
+      getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
+    );
+  }
+  itemCanceled.seller = event.params.seller;
+  itemCanceled.nftAddress = event.params.nftAddress;
+  itemCanceled.tokenId = event.params.tokenId;
+
+  // Null Address  == Has been canceled
+  activeItem!.buyer = Address.fromString(
+    "0x000000000000000000000000000000000000dEaD"
+  );
+
+  itemCanceled.save();
+  activeItem!.save();
+}
 
 export function handleItemListed(event: ItemListedEvent): void {
   let itemListed = ItemListed.load(
@@ -69,6 +94,7 @@ export function handleItemListed(event: ItemListedEvent): void {
   itemListed.price = event.params.price;
   activeItem.price = event.params.price;
 
+  // Empty Address == is on the market
   activeItem.buyer = Address.fromString(
     "0x0000000000000000000000000000000000000000"
   );
